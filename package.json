@@ -1,0 +1,20 @@
+{
+  "name": "easy_query",
+  "version": "1.0.0",
+  "description": "just a quick query tool for mysql database,not an orm suit, but it's really useful & easy to use. ❤️",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "mysql",
+    "orm",
+    "where",
+    "async"
+  ],
+  "author": "atlaxy",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^2.3.0"
+  }
+}
