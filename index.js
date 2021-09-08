@@ -166,6 +166,23 @@ class MyQuery{
     }
 
     /**
+     * insert a new record
+     * 插入新记录
+     * @param {JSON} data 
+     */
+    insert(data){
+        let sql = this.#buildInsertSql(data);
+        if(this.debug)console.log(`[easy_query] ${sql}`)
+        return new Promise((resolve,reject)=>{
+            this.connection.execute(sql,
+                    (err, result, fields)=>{
+                    if(err) reject(err)
+                    else resolve(result.changedRows)
+                }
+            );
+        })
+    }
+    /**
      * private method:build the sql select string
      * 私有方法:组建查询语句
      * @returns string
@@ -203,6 +220,20 @@ class MyQuery{
     #buildDeleteSql(){
         let sql = 'DELETE FROM `'+ this.tableName + " ";
         if(this.conditions.length) sql += "WHERE "+this.conditions.join(" AND ")
+        return sql
+    }
+
+    #buildInsertSql(data){
+        let keys = []
+        let values = []
+        for (const key in data) {
+            if (Object.hasOwnProperty.call(data, key)) {
+                keys.push(key)
+                if(data[key] == null) values.push('NULL')
+                else values.push("'"+data[key]+"'")
+            }
+        }
+        let sql = 'INSERT INTO `'+ this.tableName + "(`"+keys.join("`,`")+"`) values("+values.join(",")+")"
         return sql
     }
 }
