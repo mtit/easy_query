@@ -10,11 +10,17 @@
     "mysql",
     "orm",
     "where",
-    "async"
+    "async",
+    "mysql8",
+    "easy_query"
   ],
   "author": "atlaxy",
   "license": "ISC",
   "dependencies": {
     "mysql2": "^2.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtit/easy_query"
   }
 }

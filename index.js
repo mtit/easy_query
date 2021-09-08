@@ -1,20 +1,20 @@
 const mysql = require('mysql2');
 class MyConnect {
     constructor(options) {
-        this.debug = options.debug||false
+        this.debug = options.debug || false
         this.connection = mysql.createConnection({
             host: options.host,
             user: options.user,
             database: options.database,
-            password:options.password,
-            pool:true,
+            password: options.password,
+            pool: true,
         });
     }
-    table(tableName){
-        return new MyQuery(this,tableName)
+    table(tableName) {
+        return new MyQuery(this, tableName)
     }
 }
-class MyQuery{
+class MyQuery {
     /**
      * set up an instance of MyQuery
      * 实例化MyQuery对象
@@ -22,7 +22,7 @@ class MyQuery{
      * @param {string} tableName 
      * @returns MyQuery
      */
-    constructor(myConnect,tableName) {
+    constructor(myConnect, tableName) {
         this.connection = myConnect.connection
         this.debug = myConnect.debug
         this.tableName = tableName
@@ -36,7 +36,7 @@ class MyQuery{
      * @param {string} fieldString 
      * @returns MyQuery
      */
-    field(fieldString){
+    field(fieldString) {
         this.fields = fieldString
         return this
     }
@@ -49,9 +49,9 @@ class MyQuery{
      * @param {string} value 
      * @returns MyQuery
      */
-    where(column,exp,value){
+    where(column, exp, value) {
         // console.log(typeof value == 'string')
-        let condition = (typeof value  == 'string') ? `${column} ${exp} '${value}'` : `${column} ${exp} ${value}`
+        let condition = (typeof value == 'string') ? `${column} ${exp} '${value}'` : `${column} ${exp} ${value}`
         this.conditions.push(condition)
         return this
     }
@@ -61,7 +61,7 @@ class MyQuery{
      * 使用数组进行where条件设置
      * @param {array} whereArray 
      */
-    map(whereArray){
+    map(whereArray) {
         this.conditions.push(...whereArray)
         return this
     }
@@ -71,7 +71,7 @@ class MyQuery{
      * @param {string} sort 
      * @returns MyQuery
      */
-    order(sort){
+    order(sort) {
         this.sort = "ORDER BY " + sort
         return this
     }
@@ -83,27 +83,27 @@ class MyQuery{
      * @param {integer} offset 
      * @returns MyQuery
      */
-    limit(length,offset=0){
-        this.limitStr = `LIMIT ${(offset||0)}, ${length}`
+    limit(length, offset = 0) {
+        this.limitStr = `LIMIT ${(offset || 0)}, ${length}`
         return this
     }
-    
+
 
     /**
      * return the first record under the rules you defind before
      * 返回你规则下的第一条数据
      * @returns TextRow
      */
-    find(){
+    find() {
         this.limitStr = `LIMIT 0, 1`
         let sql = this.#buildSelectSql()
-        if(this.debug)console.log(`[easy_query] ${sql}`)
-        return new Promise((resolve,reject)=>{
+        if (this.debug) console.log(`[easy_query] ${sql}`)
+        return new Promise((resolve, reject) => {
             this.connection.query(sql,
-                    (err, results, fields)=>{
-                    if(err) reject(err)
-                    else{
-                        if(results.length)  resolve(results[0])
+                (err, results, fields) => {
+                    if (err) reject(err)
+                    else {
+                        if (results.length) resolve(results[0])
                         else resolve(null)
                     }
                 }
@@ -116,13 +116,13 @@ class MyQuery{
      * 返回你规则下的全部数据
      * @returns TextRow[]
      */
-    select(){
+    select() {
         let sql = this.#buildSelectSql()
-        if(this.debug)console.log(`[easy_query] ${sql}`)
-        return new Promise((resolve,reject)=>{
+        if (this.debug) console.log(`[easy_query] ${sql}`)
+        return new Promise((resolve, reject) => {
             this.connection.query(sql,
-                    (err, results, fields)=>{
-                    if(err) reject(err)
+                (err, results, fields) => {
+                    if (err) reject(err)
                     else resolve(results)
                 }
             );
@@ -135,13 +135,13 @@ class MyQuery{
      * @param {JSON} data 
      * @returns Number
      */
-    save(data){
+    save(data) {
         let sql = this.#buildUpdateSql(data);
-        if(this.debug)console.log(`[easy_query] ${sql}`)
-        return new Promise((resolve,reject)=>{
+        if (this.debug) console.log(`[easy_query] ${sql}`)
+        return new Promise((resolve, reject) => {
             this.connection.execute(sql,
-                    (err, result, fields)=>{
-                    if(err) reject(err)
+                (err, result, fields) => {
+                    if (err) reject(err)
                     else resolve(result.changedRows)
                 }
             );
@@ -152,13 +152,13 @@ class MyQuery{
      * delete the records under your conditions
      * @returns Number
      */
-    delete(){
+    delete() {
         let sql = this.#buildDeleteSql();
-        if(this.debug)console.log(`[easy_query] ${sql}`)
-        return new Promise((resolve,reject)=>{
+        if (this.debug) console.log(`[easy_query] ${sql}`)
+        return new Promise((resolve, reject) => {
             this.connection.execute(sql,
-                    (err, result, fields)=>{
-                    if(err) reject(err)
+                (err, result, fields) => {
+                    if (err) reject(err)
                     else resolve(result.changedRows)
                 }
             );
@@ -170,14 +170,14 @@ class MyQuery{
      * 插入新记录
      * @param {JSON} data 
      */
-    insert(data){
+    insert(data) {
         let sql = this.#buildInsertSql(data);
-        if(this.debug)console.log(`[easy_query] ${sql}`)
-        return new Promise((resolve,reject)=>{
+        if (this.debug) console.log(`[easy_query] ${sql}`)
+        return new Promise((resolve, reject) => {
             this.connection.execute(sql,
-                    (err, result, fields)=>{
-                    if(err) reject(err)
-                    else resolve(result.changedRows)
+                (err, result, fields) => {
+                    if (err) reject(err)
+                    else resolve(result.affectedRows)
                 }
             );
         })
@@ -187,11 +187,11 @@ class MyQuery{
      * 私有方法:组建查询语句
      * @returns string
      */
-     #buildSelectSql(){
-        let sql = 'SELECT ' + (this.fields||"*") + ' FROM `'+ this.tableName +'` '
-        if(this.conditions.length) sql += "WHERE "+this.conditions.join(" AND ")
-        if(this.sort) sql += " "+this.sort
-        if(this.limitStr) sql += " "+ this.limitStr
+    #buildSelectSql() {
+        let sql = 'SELECT ' + (this.fields || "*") + ' FROM `' + this.tableName + '` '
+        if (this.conditions.length) sql += "WHERE " + this.conditions.join(" AND ")
+        if (this.sort) sql += " " + this.sort
+        if (this.limitStr) sql += " " + this.limitStr
         return sql
     }
 
@@ -200,15 +200,15 @@ class MyQuery{
      * 私有方法:组建查询语句
      * @returns string
      */
-     #buildUpdateSql(data){
+    #buildUpdateSql(data) {
         let updateData = []
         for (const key in data) {
             if (Object.hasOwnProperty.call(data, key)) {
                 updateData.push(`${key} = '${data[key]}'`)
             }
         }
-        let sql = 'UPDATE `'+ this.tableName +'` SET '+ updateData.join(",") + " ";
-        if(this.conditions.length) sql += "WHERE "+this.conditions.join(" AND ")
+        let sql = 'UPDATE `' + this.tableName + '` SET ' + updateData.join(",") + " ";
+        if (this.conditions.length) sql += "WHERE " + this.conditions.join(" AND ")
         return sql
     }
 
@@ -217,23 +217,24 @@ class MyQuery{
      * 私有方法:组建删除语句
      * @returns String
      */
-    #buildDeleteSql(){
-        let sql = 'DELETE FROM `'+ this.tableName + " ";
-        if(this.conditions.length) sql += "WHERE "+this.conditions.join(" AND ")
+    #buildDeleteSql() {
+        let sql = 'DELETE FROM `' + this.tableName + " ";
+        if (this.conditions.length) sql += "WHERE " + this.conditions.join(" AND ")
         return sql
     }
 
-    #buildInsertSql(data){
+    #buildInsertSql(data) {
         let keys = []
         let values = []
         for (const key in data) {
             if (Object.hasOwnProperty.call(data, key)) {
-                keys.push(key)
-                if(data[key] == null) values.push('NULL')
-                else values.push("'"+data[key]+"'")
+                if (data[key] !== null){
+                    keys.push(key)
+                    values.push("'" + data[key] + "'")
+                }
             }
         }
-        let sql = 'INSERT INTO `'+ this.tableName + "(`"+keys.join("`,`")+"`) values("+values.join(",")+")"
+        let sql = 'INSERT INTO `' + this.tableName + "`(`" + keys.join("`,`") + "`) values(" + values.join(",") + ")"
         return sql
     }
 }
