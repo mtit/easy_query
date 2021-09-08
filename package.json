@@ -1,5 +1,5 @@
 {
-  "name": "easy_query",
+  "name": "easier_query",
   "version": "1.0.0",
   "description": "just a quick query tool for mysql database,not an orm suit, but it's really useful & easy to use. ❤️",
   "main": "index.js",
