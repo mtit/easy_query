@@ -1,10 +1,15 @@
-# Why make this
+## Why make this
 > Sometimes, for some small projects, we do not need to synchronize the table by model setting, just add, delete, modify and query. We do not need to use the ORM framework, so we get this library.
 
 
-# How to use this
 
-## initialization
+## Installation
+``` shell
+npm i easier_query
+```
+
+## Usage
+### Initialization
 ``` javascript
 const EasyQuery = require('easy_query')
 const myQuery = new EasyQuery({
@@ -16,32 +21,35 @@ const myQuery = new EasyQuery({
 })
 ```
 
-## select
-```javascript
+### select
+``` javascript
 const res1 = await myQuery.table('profile').field('id,name,gender,phone').where('id','<',100).order('id desc').limit(3).select()
 console.log(res1)
+// group select
+const res2 = await myQuery.table('profile').field('gender,count(1) as cnt').group('gender').having('cnt','>',3).select()
+console.log(res2)
 ```
 
-## find
-```javascript
+### find
+``` javascript
 const res = await myQuery.table('profile').field('id,name,gender,phone').where('id','<',100).find()
 console.log(res)
 ```
 
-## update
-```javascript
+### update
+``` javascript
 const res = await myQuery.table('profile').where('id','<',100).save({gender:"female"})
 console.log(res)
 ```
 
-## delete
-```javascript
+### delete
+``` javascript
 const res = await myQuery.table('profile').where('id','<',100).delete()
 console.log(res)    // the changedRows
 ```
 
-## insert
-```javascript
+### insert
+``` javascript
 let data = {
     name:"lucy",
     age:"18",
@@ -49,4 +57,16 @@ let data = {
 }
 const res = await myQuery.table('profile').insert(data)
 console.log(res)    // the affectedRows
+```
+
+### fetch
+> fecth() must be used before find、select、delete、save、insert
+``` javascript
+let data = {
+    name:"lucy",
+    age:"18",
+    gender:"female"
+}
+const res =  myQuery.table('profile').fetch().insert(data)
+console.log(res)    // return the sql string
 ```

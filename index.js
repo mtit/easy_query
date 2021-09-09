@@ -20,6 +20,7 @@ class MyQuery {
      * 实例化MyQuery对象
      * @param {MyConnect} myConnect 
      * @param {string} tableName 
+     * @version 1.0.0
      * @returns MyQuery
      */
     constructor(myConnect, tableName) {
@@ -27,6 +28,8 @@ class MyQuery {
         this.debug = myConnect.debug
         this.tableName = tableName
         this.conditions = []
+        this.groupConditions = [];
+        this.fetchSql = false;
         return this
     }
 
@@ -34,6 +37,7 @@ class MyQuery {
      * limit the columns you want to select,use ',' to slice the columns
      * 限定查询列名，使用英文逗号分割
      * @param {string} fieldString 
+     * @version 1.0.0
      * @returns MyQuery
      */
     field(fieldString) {
@@ -47,6 +51,7 @@ class MyQuery {
      * @param {string} column 
      * @param {string} exp 
      * @param {string} value 
+     * @version 1.0.0
      * @returns MyQuery
      */
     where(column, exp, value) {
@@ -60,6 +65,7 @@ class MyQuery {
      * using condition array to setup the where condition
      * 使用数组进行where条件设置
      * @param {array} whereArray 
+     * @version 1.0.0
      */
     map(whereArray) {
         this.conditions.push(...whereArray)
@@ -69,6 +75,7 @@ class MyQuery {
      * set up the sort rule,like 'id desc','id asc'...
      * 设置排序规则，如"id desc"、"id asc"...
      * @param {string} sort 
+     * @version 1.0.0
      * @returns MyQuery
      */
     order(sort) {
@@ -81,6 +88,7 @@ class MyQuery {
      * 限制返回条数，偏移量非必需
      * @param {integer} length 
      * @param {integer} offset 
+     * @version 1.0.0
      * @returns MyQuery
      */
     limit(length, offset = 0) {
@@ -88,16 +96,64 @@ class MyQuery {
         return this
     }
 
+    /**
+     * group by field,only enabled in select method
+     * GROUP BY ,只对select操作有效
+     * @version 1.0.2
+     * @param {string} field 
+     */
+    group(field){
+        this.groupby = ` GROUP BY ${field}`
+        return this
+    }
+
+    /**
+     * set up the group condition 
+     * 设置having条件
+     * @param {string} column 
+     * @param {string} exp 
+     * @param {string||number||null} value 
+     * @version 1.0.2
+     * @returns MyQuery
+     */
+    having(column, exp, value) {
+        // console.log(typeof value == 'string')
+        let condition = (typeof value == 'string') ? `${column} ${exp} '${value}'` : `${column} ${exp} ${value}`
+        this.groupConditions.push(condition)
+        return this
+    }
+
+    /**
+     * using condition array to setup the group condition
+     * 使用数组进行group条件设置
+     * @param {array} havingArray 
+     * @version 1.0.0
+     */
+    have(havingArray) {
+        this.groupConditions.push(...havingArray)
+        return this
+    }
+
+    /**
+     * 
+     * @returns MyQuery
+     */
+    fetch(){
+        this.fetchSql = true;
+        return this
+    }
 
     /**
      * return the first record under the rules you defind before
      * 返回你规则下的第一条数据
+     * @version 1.0.0
      * @returns TextRow
      */
     find() {
         this.limitStr = `LIMIT 0, 1`
         let sql = this.#buildSelectSql()
         if (this.debug) console.log(`[easy_query] ${sql}`)
+        if (this.fetchSql) return sql
         return new Promise((resolve, reject) => {
             this.connection.query(sql,
                 (err, results, fields) => {
@@ -114,11 +170,13 @@ class MyQuery {
     /**
      * return all the records under the rules you defind before
      * 返回你规则下的全部数据
+     * @version 1.0.0
      * @returns TextRow[]
      */
     select() {
         let sql = this.#buildSelectSql()
         if (this.debug) console.log(`[easy_query] ${sql}`)
+        if (this.fetchSql) return sql
         return new Promise((resolve, reject) => {
             this.connection.query(sql,
                 (err, results, fields) => {
@@ -133,11 +191,13 @@ class MyQuery {
      * update the records under your conditons
      * 更新通过where条件查询到的记录
      * @param {JSON} data 
+     * @version 1.0.0
      * @returns Number
      */
     save(data) {
         let sql = this.#buildUpdateSql(data);
         if (this.debug) console.log(`[easy_query] ${sql}`)
+        if (this.fetchSql) return sql
         return new Promise((resolve, reject) => {
             this.connection.execute(sql,
                 (err, result, fields) => {
@@ -150,11 +210,13 @@ class MyQuery {
 
     /**
      * delete the records under your conditions
+     * @version 1.0.0
      * @returns Number
      */
     delete() {
         let sql = this.#buildDeleteSql();
         if (this.debug) console.log(`[easy_query] ${sql}`)
+        if (this.fetchSql) return sql
         return new Promise((resolve, reject) => {
             this.connection.execute(sql,
                 (err, result, fields) => {
@@ -168,11 +230,13 @@ class MyQuery {
     /**
      * insert a new record
      * 插入新记录
+     * @version 1.0.1
      * @param {JSON} data 
      */
     insert(data) {
         let sql = this.#buildInsertSql(data);
         if (this.debug) console.log(`[easy_query] ${sql}`)
+        if (this.fetchSql) return sql
         return new Promise((resolve, reject) => {
             this.connection.execute(sql,
                 (err, result, fields) => {
@@ -182,6 +246,7 @@ class MyQuery {
             );
         })
     }
+
     /**
      * private method:build the sql select string
      * 私有方法:组建查询语句
@@ -190,6 +255,8 @@ class MyQuery {
     #buildSelectSql() {
         let sql = 'SELECT ' + (this.fields || "*") + ' FROM `' + this.tableName + '` '
         if (this.conditions.length) sql += "WHERE " + this.conditions.join(" AND ")
+        if (this.groupby) sql += this.groupby
+        if (this.groupConditions.length && this.groupby) sql += " HAVING " + this.groupConditions.join(" AND ")
         if (this.sort) sql += " " + this.sort
         if (this.limitStr) sql += " " + this.limitStr
         return sql

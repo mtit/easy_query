@@ -2,7 +2,7 @@ const EasyQuery = require('./index')
 const myQuery = new EasyQuery({
     host: "127.0.0.1",      // the mysql host
     user: "root",           // the mysql user
-    database: "test",    // the database you will use
+    database: "profile",    // the database you will use
     password: "root",   // the password
     debug:true              // true means the built sql string will be printed in the console
 })
@@ -19,7 +19,7 @@ const doFind = async () => {
 // doFind()
 
 const doSelect = async () => {
-    const res1 = await myQuery.table('profile').field('id,name,gender,phone').where('gender','=','女').where('id','<',100).order('id desc').limit(3).select()
+    const res1 = await myQuery.table('profile').field('gender,count(1) as cnt').where('id','<',400).group('gender').having('cnt','>',150).fetch().select()
     console.log(res1)
     // const res2 = await myQuery.table('profile').map(["gender = '女'","id BETWEEN 30 AND 300"]).limit(3).select()
     // console.log(res2)
