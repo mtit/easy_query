@@ -1,10 +1,16 @@
 const mysql = require('mysql2');
+const configOptions = require('./config')
 class MyConnect {
+    /**
+     * initialization
+     * @param {configOptions} options 
+     */
     constructor(options) {
         this.debug = options.debug || false
         this.connection = mysql.createConnection({
             host: options.host,
             user: options.user,
+            port: options.port,
             database: options.database,
             password: options.password,
             pool: true,

@@ -1,6 +1,7 @@
 const EasyQuery = require('./index')
 const myQuery = new EasyQuery({
     host: "127.0.0.1",      // the mysql host
+    port: "3306",
     user: "root",           // the mysql user
     database: "profile",    // the database you will use
     password: "aisiteru",   // the password
