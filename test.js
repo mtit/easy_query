@@ -3,7 +3,7 @@ const myQuery = new EasyQuery({
     host: "127.0.0.1",      // the mysql host
     user: "root",           // the mysql user
     database: "profile",    // the database you will use
-    password: "root",   // the password
+    password: "aisiteru",   // the password
     debug:true              // true means the built sql string will be printed in the console
 })
 
@@ -49,3 +49,17 @@ const doInsert = async () => {
 }
 
 // doInsert()
+
+const doCount = async () => {
+    const res1 = await myQuery.table('profile').where('id','<',400).where('gender','=','女').count();
+    console.log(res1)
+    // const res2 = await myQuery.table('profile').map(["gender = '女'","id BETWEEN 30 AND 300"]).limit(3).select()
+    // console.log(res2)
+}
+// doCount()
+
+const doPage = async () =>{
+    const res1 = await myQuery.table('profile').where('id','<',400).where('gender','=','女').page(20,3);
+    console.log(res1)
+}
+doPage()

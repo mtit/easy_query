@@ -70,3 +70,16 @@ let data = {
 const res =  myQuery.table('profile').fetch().insert(data)
 console.log(res)    // return the sql string
 ```
+
+* version 1.0.3
+### count
+``` javascript
+const res1 = await myQuery.table('profile').where('id','<',400).where('gender','=','女').count();
+console.log(res1)
+```
+
+### page
+``` javascript
+const res1 = await myQuery.table('profile').where('id','<',400).where('gender','=','女').page(20,3);
+console.log(res1)
+```

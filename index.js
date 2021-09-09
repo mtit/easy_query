@@ -248,6 +248,43 @@ class MyQuery {
     }
 
     /**
+     * return the count under the rules
+     * 返回满足条件的记录条数
+     * @returns number
+     */
+    count(){
+        let sql = this.#buildCountSql()
+        if (this.debug) console.log(`[easy_query] ${sql}`)
+        if (this.fetchSql) return sql
+        return new Promise((resolve, reject) => {
+            this.connection.query(sql,
+                (err, results, fields) => {
+                    if (err) reject(err)
+                    else{
+                        resolve(results[0].easy_query_count)
+                    }
+                }
+            );
+        })
+    }
+    /**
+     * quickly select records by page 
+     * 快速分页查询，limit方法失效
+     * @param {number} limit how many items per page
+     * @param {number} page current page number
+     */
+    async page(limit , page){
+        if (this.fetchSql) return "fetch method not avaliable on page method"
+        let totalCount = await this.count()
+        let totalPage = Math.ceil(totalCount/limit)
+        let currentPage = page
+        this.limit(limit,(page - 1)*limit)
+        let list = await this.select();
+        return {
+            totalPage,currentPage,totalCount,list
+        }
+    }
+    /**
      * private method:build the sql select string
      * 私有方法:组建查询语句
      * @returns string
@@ -259,6 +296,19 @@ class MyQuery {
         if (this.groupConditions.length && this.groupby) sql += " HAVING " + this.groupConditions.join(" AND ")
         if (this.sort) sql += " " + this.sort
         if (this.limitStr) sql += " " + this.limitStr
+        return sql
+    }
+
+    /**
+     * private method:build the sql count string
+     * 私有方法:组建查询语句
+     * @returns string
+     */
+     #buildCountSql() {
+        let sql = 'SELECT count(1) as easy_query_count FROM `' + this.tableName + '` '
+        if (this.conditions.length) sql += "WHERE " + this.conditions.join(" AND ")
+        if (this.groupby) sql += this.groupby
+        if (this.groupConditions.length && this.groupby) sql += " HAVING " + this.groupConditions.join(" AND ")
         return sql
     }
 
