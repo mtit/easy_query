@@ -15,6 +15,7 @@ const EasyQuery = require('easy_query')
 const myQuery = new EasyQuery({
     host: "127.0.0.1",      // the mysql host
     user: "root",           // the mysql user
+    port: "3306",           // the mysql server port
     database: "test",       // the database you will use
     password: "root",       // the password
     debug:true              // true means the built sql string will be printed in the console
