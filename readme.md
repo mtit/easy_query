@@ -84,3 +84,12 @@ console.log(res1)
 const res1 = await myQuery.table('profile').where('id','<',400).where('gender','=','女').page(20,3);
 console.log(res1)
 ```
+
+## Changelog
+* 1.0.4
+> add `port` option,and make ide hinting code
+* 1.0.3
+> add  `count` and `page` method
+* 1.0.2
+> add `group` , `fetch` , `having` and `have` method
+
