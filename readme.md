@@ -93,3 +93,5 @@ console.log(res1)
 * 1.0.2
 > add `group` , `fetch` , `having` and `have` method
 
+## Motto
+***Manners Maketh Man***
