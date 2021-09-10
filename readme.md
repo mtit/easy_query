@@ -85,7 +85,20 @@ const res1 = await myQuery.table('profile').where('id','<',400).where('gender','
 console.log(res1)
 ```
 
+### join
+*notice that the column name may be ambiguous.*
+```javascript
+const withJoin = async () => {
+    const res = await myQuery.table('image').join('poster','poster.id = image.pid','LEFT').where('image.id','<',35).select();
+    console.log(res)
+}
+withJoin()
+```
+
+
 ## Changelog
+* 1.0.5
+> add `join` method
 * 1.0.4
 > add `port` option,and make ide hinting code
 * 1.0.3

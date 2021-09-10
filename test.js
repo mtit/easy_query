@@ -3,8 +3,8 @@ const myQuery = new EasyQuery({
     host: "127.0.0.1",      // the mysql host
     port: "3306",
     user: "root",           // the mysql user
-    database: "profile",    // the database you will use
-    password: "aisiteru",   // the password
+    database: "test",    // the database you will use
+    password: "root",   // the password
     debug:true              // true means the built sql string will be printed in the console
 })
 
@@ -63,4 +63,10 @@ const doPage = async () =>{
     const res1 = await myQuery.table('profile').where('id','<',400).where('gender','=','女').page(20,3);
     console.log(res1)
 }
-doPage()
+// doPage()
+
+const withJoin = async () => {
+    const res = await myQuery.table('image').join('poster','poster.id = image.pid','LEFT').where('image.id','<',35).select();
+    console.log(res)
+}
+withJoin()

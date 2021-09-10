@@ -103,6 +103,16 @@ class MyQuery {
     }
 
     /**
+     * join method,only available with find and select
+     * @param {string} tableName 
+     * @param {string} onCondition 
+     * @param {string} joinType 
+     */
+    join(tableName,onCondition,joinType='INNER'){
+        this.joinStr = `${joinType} JOIN \`${tableName}\` ON ${onCondition} `
+        return this
+    }
+    /**
      * group by field,only enabled in select method
      * GROUP BY ,只对select操作有效
      * @version 1.0.2
@@ -297,6 +307,7 @@ class MyQuery {
      */
     #buildSelectSql() {
         let sql = 'SELECT ' + (this.fields || "*") + ' FROM `' + this.tableName + '` '
+        if (this.joinStr) sql += this.joinStr
         if (this.conditions.length) sql += "WHERE " + this.conditions.join(" AND ")
         if (this.groupby) sql += this.groupby
         if (this.groupConditions.length && this.groupby) sql += " HAVING " + this.groupConditions.join(" AND ")
