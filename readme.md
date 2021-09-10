@@ -1,3 +1,7 @@
+[![npm version](https://img.shields.io/npm/v/easier_query.svg?style=flat-square)](https://www.npmjs.org/package/easier_query)
+[![npm downloads](https://img.shields.io/npm/dm/easier_query.svg?style=flat-square)](http://npm-stat.com/charts.html?package=easier_query)
+[![install size](https://packagephobia.now.sh/badge?p=easier_query)](https://packagephobia.now.sh/result?p=easier_query)
+
 ## Why make this
 > Sometimes, for some small projects, we do not need to synchronize the table by model setting, just add, delete, modify and query. We do not need to use the ORM framework, so we get this library.
 
