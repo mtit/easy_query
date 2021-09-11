@@ -16,6 +16,40 @@ class MyConnect {
             pool: true,
         });
     }
+    /**
+     * query via sql command directly
+     * 使用sql语句直接查询
+     * @param {string} sql the sql command
+     * @returns 
+     */
+    query(sql){
+        return new Promise((resolve, reject) => {
+            this.connection.query(sql,
+                (err, results, fields) => {
+                    if (err) reject(err)
+                    else {
+                        resolve(results)
+                    }
+                }
+            );
+        })
+    }
+    /**
+     * execute via sql command directly
+     * 直接执行sql语句
+     * @param {string} sql the sql command
+     * @returns 
+     */
+    execute(sql){
+        return new Promise((resolve, reject) => {
+            this.connection.execute(sql,
+                (err, result, fields) => {
+                    if (err) reject(err)
+                    else resolve(result)
+                }
+            );
+        })
+    }
     table(tableName) {
         return new MyQuery(this, tableName)
     }

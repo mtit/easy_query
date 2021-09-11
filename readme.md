@@ -25,6 +25,17 @@ const myQuery = new EasyQuery({
     debug:true              // true means the built sql string will be printed in the console
 })
 ```
+### query
+``` javascript
+const res = await myQuery.query("select id,name,gender from profile order by id asc limit 10")
+console.log(res)
+```
+
+### execute
+``` javascript
+const res = await myQuery.execute("delete from profile where id = 20")
+console.log(res)
+```
 
 ### select
 ``` javascript
@@ -101,6 +112,8 @@ withJoin()
 
 
 ## Changelog
+* 1.0.6
+> add `query` and `execute` method, and it seems to be the final edition. focus on bug fixing.
 * 1.0.5
 > add `join` method
 * 1.0.4
