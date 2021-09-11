@@ -15,7 +15,7 @@ npm i easier_query
 ## Usage
 ### Initialization
 ``` javascript
-const EasyQuery = require('easy_query')
+const EasyQuery = require('easier_query')
 const myQuery = new EasyQuery({
     host: "127.0.0.1",      // the mysql host
     user: "root",           // the mysql user
