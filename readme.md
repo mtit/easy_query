@@ -112,6 +112,8 @@ withJoin()
 
 
 ## Changelog
+* 1.0.7
+> fixed the `delete` bug.
 * 1.0.6
 > add `query` and `execute` method, and it seems to be the final edition. focus on bug fixing.
 * 1.0.5

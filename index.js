@@ -386,7 +386,7 @@ class MyQuery {
      * @returns String
      */
     #buildDeleteSql() {
-        let sql = 'DELETE FROM `' + this.tableName + " ";
+        let sql = 'DELETE FROM `' + this.tableName + "` ";
         if (this.conditions.length) sql += "WHERE " + this.conditions.join(" AND ")
         return sql
     }

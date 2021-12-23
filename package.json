@@ -1,6 +1,6 @@
 {
   "name": "easier_query",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "just a quick query tool for mysql database,not an orm suit, but it's really useful & easy to use. ❤️",
   "main": "index.js",
   "scripts": {
